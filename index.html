@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Céleste, ma planète — Jeux de lecture</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1e242b;
+      --muted: #566573;
+      --primary: #1b4f72;
+      --primary-light: #e6f0fa;
+      --accent: #2874a6;
+      --success: #1e8449;
+      --success-bg: #eafaf1;
+      --warning: #9a7d0a;
+      --warning-bg: #fef9e7;
+      --error: #b03a2e;
+      --error-bg: #fdedec;
+      --border: #d6eaf8;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Comic Sans MS", "Chalkboard SE", "Segoe UI", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 18px 16px 60px;
+    }
+
+    header {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(27, 79, 114, 0.06);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.45rem;
+      color: var(--primary);
+    }
+
+    header p {
+      margin: 4px 0 0;
+      font-size: 0.98rem;
+      color: var(--muted);
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: transform 0.1s ease, background-color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: #ffffff;
+      font-size: 1.15rem;
+      padding: 15px 26px;
+    }
+
+    .btn-success:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background-color: #ffffff;
+      color: var(--primary);
+      border: 2px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--primary-light);
+    }
+
+    .speak-btn {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1.5px solid #aed6f1;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .speak-btn:hover {
+      background: #d4e6f1;
+    }
+
+    /* Menu des chapitres */
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .chapter-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .chapter-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: bold;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .chapter-card h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--text);
+    }
+
+    .chapter-score {
+      font-size: 0.98rem;
+      color: var(--muted);
+      background: #f8f9f9;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    /* Zone d'exercice */
+    .game-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .game-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .game-title {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .game-consigne {
+      margin: 4px 0 0;
+      font-size: 1.05rem;
+      color: var(--text);
+    }
+
+    /* Jeu 1 : Appariement */
+    .match-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 650px) {
+      .match-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .match-item {
+      background: #f8fbfd;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1.02rem;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      color: var(--text);
+      transition: all 0.15s ease;
+    }
+
+    .match-item.selected {
+      border-color: var(--accent);
+      background: #d6eaf8;
+      transform: scale(1.01);
+    }
+
+    .pair-0 { background: #e8f8f5 !important; border-color: #1abc9c !important; }
+    .pair-1 { background: #fef9e7 !important; border-color: #f1c40f !important; }
+    .pair-2 { background: #f5eef8 !important; border-color: #9b59b6 !important; }
+    .pair-3 { background: #ebf5fb !important; border-color: #3498db !important; }
+
+    .pair-tag {
+      display: inline-block;
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.08);
+      margin-right: 6px;
+    }
+
+    /* Jeu 2 : Chasse à l'intrus */
+    .intruder-row {
+      background: #f8fbfd;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .intruder-label {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .words-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .word-chip {
+      font-family: inherit;
+      font-size: 1.05rem;
+      background: #ffffff;
+      border: 2px solid #aed6f1;
+      border-radius: 10px;
+      padding: 8px 14px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .word-chip.crossed {
+      background: var(--error-bg);
+      border-color: var(--error);
+      color: var(--error);
+      text-decoration: line-through;
+      font-weight: bold;
+    }
+
+    /* Jeu 3 : Phrases à trous */
+    .word-bank {
+      background: var(--warning-bg);
+      border: 2px solid #f7dc6f;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bank-title {
+      font-weight: bold;
+      color: var(--warning);
+      margin-right: 6px;
+    }
+
+    .bank-word {
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: bold;
+      background: #ffffff;
+      border: 2px solid #f4d03f;
+      border-radius: 10px;
+      padding: 7px 14px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .bank-word.active {
+      background: #f9e79f;
+      border-color: #b7950b;
+      transform: scale(1.05);
+    }
+
+    .bank-word.used {
+      opacity: 0.45;
+    }
+
+    .gap-sentence {
+      font-size: 1.08rem;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .gap-slot {
+      display: inline-block;
+      min-width: 135px;
+      padding: 2px 12px;
+      margin: 0 4px;
+      border-bottom: 3px dashed var(--accent);
+      background: var(--primary-light);
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      color: var(--primary);
+      cursor: pointer;
+      min-height: 32px;
+      vertical-align: middle;
+    }
+
+    /* Jeu 4 : QCM */
+    .qcm-block {
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .qcm-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .qcm-question {
+      font-weight: bold;
+      font-size: 1.08rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .qcm-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .qcm-opt {
+      font-family: inherit;
+      font-size: 1.02rem;
+      text-align: left;
+      background: #f8fbfd;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 15px;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qcm-opt.chosen {
+      background: #d6eaf8;
+      border-color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* États de correction */
+    .correct-ans {
+      background: var(--success-bg) !important;
+      border-color: var(--success) !important;
+      color: var(--success) !important;
+    }
+
+    .wrong-ans {
+      background: var(--error-bg) !important;
+      border-color: var(--error) !important;
+      color: var(--error) !important;
+    }
+
+    .correction-hint {
+      font-size: 0.95rem;
+      color: var(--success);
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    /* Bilan final */
+    .result-box {
+      background: var(--card);
+      border: 3px solid var(--success);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .result-score {
+      font-size: 2.1rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 8px 0;
+    }
+
+    .send-status {
+      margin-top: 14px;
+      font-weight: bold;
+      font-size: 1.05rem;
+      padding: 10px 14px;
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <h1>📖 Céleste, ma planète</h1>
+      <p id="header-subtitle">Choisis un chapitre pour commencer les jeux de lecture</p>
+    </div>
+    <button id="back-btn" class="btn btn-outline hidden" onclick="showMenu()">⬅ Tous les chapitres</button>
+  </header>
+
+  <!-- ÉCRAN 1 : MENU DES CHAPITRES -->
+  <div id="menu-view" class="chapters-grid"></div>
+
+  <!-- ÉCRAN 2 : ZONE DE JEU D'UN CHAPITRE -->
+  <div id="game-view" class="hidden"></div>
+</div>
+
+<script>
+// ============================================================================
+// CONFIGURATION FORMSPREE (Lien fourni par Benjamin)
+// ============================================================================
+const FORMSPREE_URL = "https://formspree.io/f/xljbbwaz";
+
+// ============================================================================
+// DONNÉES DES CHAPITRES 2 À 6
+// ============================================================================
+const CHAPTERS = [
+  {
+    id: 2,
+    title: "Chapitre 2 : La tour des voitures",
+    ex1: {
+      left: [
+        "1. « Je m'en fous de ton congélateur, gros tas ! »",
+        "2. « Tu n'as pas de téléphone portable pour l'appeler ? »",
+        "3. « Céleste ne vole rien ! »",
+        "4. Il descend dans la nuit avec la nacelle de son père."
+      ],
+      right: [
+        "A. Le gardien du parking",
+        "B. Le géant du toit (père de Céleste)",
+        "C. Briss (triste après la dispute)",
+        "D. Le narrateur (en colère)"
+      ],
+      // Association index gauche -> index droite
+      answers: [3, 0, 1, 2]
+    },
+    ex2: [
+      { label: "1. Les objets du géant :", words: ["boîte à outils", "pain", "deux bouteilles d'eau", "téléphone portable"], intruder: 3 },
+      { label: "2. La tour 330 :", words: ["voitures", "fumée noire", "ventilateurs", "piscine"], intruder: 3 },
+      { label: "3. Les sentiments :", words: ["impatience", "regret", "ennui", "joie"], intruder: 2 },
+      { label: "4. Céleste cachée :", words: ["bandages", "taches brunes", "trappe", "maillot de bain"], intruder: 3 }
+    ],
+    ex3: {
+      bank: ["fumée", "dispute", "voleuse", "gardien", "trappe"],
+      sentences: [
+        { before: "1. Le vendredi soir, le narrateur regrette sa", after: "avec son ami Briss.", answer: "dispute" },
+        { before: "2. Le narrateur profite que le", after: "tourne le dos pour prendre l'ascenseur de service.", answer: "gardien" },
+        { before: "3. En haut des 330 étages, une épaisse", after: "bleue et chaude étouffe le garçon.", answer: "fumée" },
+        { before: "4. Pour faire réagir le géant, le narrateur prétend que Céleste est une", after: ".", answer: "voleuse" },
+        { before: "5. Le père de Céleste ouvre une", after: "dans le béton pour la rejoindre.", answer: "trappe" }
+      ]
+    },
+    ex4: [
+      {
+        q: "1. Pourquoi le narrateur insulte-t-il son ami Briss le vendredi soir ?",
+        options: [
+          "Parce que Briss a cassé son pinceau.",
+          "Parce qu'il est nerveux et obsédé par l'absence de Céleste.",
+          "Parce que Briss refuse de lui prêter son ordinateur."
+        ],
+        answer: 1
+      },
+      {
+        q: "2. Pourquoi le narrateur refuse-t-il d'avoir un téléphone portable ?",
+        options: [
+          "Parce qu'il trouve que cela ressemble à une laisse pour chien.",
+          "Parce que sa mère n'a pas assez d'argent pour en acheter un.",
+          "Parce que les téléphones sont interdits au collège."
+        ],
+        answer: 0
+      },
+      {
+        q: "3. Comment le narrateur connaît-il l'adresse de Céleste ?",
+        options: [
+          "Briss lui a donné son numéro de téléphone.",
+          "Il a lu la fiche que Céleste avait laissée dans son casier.",
+          "Le gardien du parking lui a donné le numéro d'étage."
+        ],
+        answer: 1
+      },
+      {
+        q: "4. Pourquoi le narrateur dit-il que Céleste est une « voleuse » ?",
+        options: [
+          "Parce qu'elle a volé son goûter au collège.",
+          "Pour provoquer le géant et vérifier qu'il connaît bien Céleste.",
+          "Parce qu'elle a volé la clé de l'ascenseur."
+        ],
+        answer: 1
+      },
+      {
+        q: "5. Dans quel état le narrateur retrouve-t-il Céleste sous le toit du 330 ?",
+        options: [
+          "En pleine forme, en train de peindre des cartes.",
+          "Malade, tremblante, avec des bandages et des taches brunes.",
+          "Endormie dans une voiture garée au dernier étage."
+        ],
+        answer: 1
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "Chapitre 3 : Les urgences d'Industry",
+    ex1: {
+      left: [
+        "1. « Mon père a peur qu'on nous mette dehors si on découvre ma maladie. »",
+        "2. « Très bien Gründa, c'est juste un petit problème de santé. »",
+        "3. « Avale les comprimés rouges et bleus et couche-toi ! »",
+        "4. Il donne une carte magnétique et son numéro de téléphone."
+      ],
+      right: [
+        "A. Le Doc (médecin d'Industry)",
+        "B. Céleste",
+        "C. La mère du narrateur",
+        "D. Le narrateur (au téléphone)"
+      ],
+      answers: [1, 3, 2, 0]
+    },
+    ex2: [
+      { label: "1. Le sauvetage de nuit :", words: ["hélicoptère blanc", "brancard", "gilet fluorescent", "camionnette"], intruder: 3 },
+      { label: "2. La maladie de Céleste :", words: ["tache brune", "contagieux", "béton glacé", "vaccin"], intruder: 3 },
+      { label: "3. L'entreprise Industry :", words: ["trois mille usines", "pétrole", "hôpital privé", "boulangerie"], intruder: 3 },
+      { label: "4. Objets donnés au narrateur :", words: ["carte magnétique", "numéro de téléphone", "masque", "pain"], intruder: 3 }
+    ],
+    ex3: {
+      bank: ["pressentiment", "santé", "hélicoptère", "dehors", "pollution"],
+      sentences: [
+        { before: "1. Le père de Céleste cache sa fille car il a peur qu'on les mette", after: ".", answer: "dehors" },
+        { before: "2. Pour faire réagir sa mère, le narrateur parle d'un problème de", after: ".", answer: "santé" },
+        { before: "3. L'entreprise Industry gagne beaucoup d'argent mais crée énormément de", after: ".", answer: "pollution" },
+        { before: "4. À minuit, un", after: "blanc se pose sur la terrasse du 330 pour emmener Céleste.", answer: "hélicoptère" },
+        { before: "5. À la fin du chapitre, le garçon a un mauvais", after: ": il craint un piège.", answer: "pressentiment" }
+      ]
+    },
+    ex4: [
+      {
+        q: "1. Pourquoi le père de Céleste ne l'emmène-t-il pas à l'hôpital ?",
+        options: [
+          "Parce qu'il a peur de perdre son travail et son logement.",
+          "Parce que Céleste refuse de voir un médecin.",
+          "Parce qu'il n'y a aucun hôpital dans la ville."
+        ],
+        answer: 0
+      },
+      {
+        q: "2. Quelle ruse le narrateur utilise-t-il pour que sa mère le rappelle vite ?",
+        options: [
+          "Il lui dit qu'il a cassé tous les meubles du salon.",
+          "Il fait croire que c'est lui qui a un problème de santé.",
+          "Il menace de quitter la maison avec Briss."
+        ],
+        answer: 1
+      },
+      {
+        q: "3. Quelle injustice le narrateur remarque-t-il à propos d'Industry ?",
+        options: [
+          "Industry pollue toute la planète mais garde ses meilleurs médecins pour elle.",
+          "Industry fabrique des voitures qui ne roulent pas.",
+          "Industry interdit aux enfants d'aller au collège."
+        ],
+        answer: 0
+      },
+      {
+        q: "4. Que remarque le narrateur en regardant la tache brune sur le front de Céleste ?",
+        options: [
+          "Qu'elle devient bleue pendant la nuit.",
+          "Que sa forme lui semble familière, comme déjà vue ailleurs.",
+          "Qu'elle disparaît dès qu'elle monte dans l'hélicoptère."
+        ],
+        answer: 1
+      },
+      {
+        q: "5. Que ressent le narrateur quand l'hélicoptère repart dans la nuit ?",
+        options: [
+          "Il est rassuré et va dormir tranquillement.",
+          "Il ressent une angoisse et a peur d'avoir envoyé Céleste dans un piège.",
+          "Il est fâché contre le Doc parce qu'il n'a pas pu monter."
+        ],
+        answer: 1
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "Chapitre 4 : Le secret des cartes",
+    ex1: {
+      left: [
+        "1. « Prenez cette enveloppe noire, ça vient du service de la peau. »",
+        "2. « Il faut que tu oublies cette fille, c'est un conseil d'ami. »",
+        "3. « Si la Terre était une personne, on ferait tout pour la sauver. »",
+        "4. Il lance son téléphone à travers la grande vitre du salon."
+      ],
+      right: [
+        "A. Le musicien (clarinette)",
+        "B. Le narrateur (en colère)",
+        "C. La surveillante de l'hôpital",
+        "D. Le Doc (au téléphone)"
+      ],
+      answers: [2, 3, 0, 1]
+    },
+    ex2: [
+      { label: "1. À l'hôpital :", words: ["chambre 221", "dossier 66400", "vieille dame sourde", "hélicoptère"], intruder: 3 },
+      { label: "2. Les catastrophes sur la peau :", words: ["forêt d'Amazonie", "glace en Arctique", "déserts d'Afrique", "neige du Grand Nord"], intruder: 3 },
+      { label: "3. Dans le sac du narrateur :", words: ["atlas", "enveloppe noire", "dix photos médicales", "boîte de glaces"], intruder: 3 },
+      { label: "4. La colère du narrateur :", words: ["vase en porcelaine", "vitrine en cristal", "téléphone lancé", "piano cassé"], intruder: 3 }
+    ],
+    ex3: {
+      bank: ["atlas", "pollution", "dossier", "cœur", "disparaître"],
+      sentences: [
+        { before: "1. À l'accueil de l'hôpital, on dit que le", after: "66400 n'a jamais existé.", answer: "dossier" },
+        { before: "2. Sur l'affiche du journal, la forêt d'Amazonie a la forme d'un", after: "grignoté.", answer: "cœur" },
+        { before: "3. Le garçon compare les photos médicales de Céleste avec les cartes de son", after: ".", answer: "atlas" },
+        { before: "4. Chaque blessure sur le corps de Céleste correspond à la", after: "de la Terre.", answer: "pollution" },
+        { before: "5. Pour protéger leur entreprise, les chefs d'Industry veulent faire", after: "Céleste.", answer: "disparaître" }
+      ]
+    },
+    ex4: [
+      {
+        q: "1. Pourquoi le narrateur ment-il à l'accueil de l'hôpital en disant être de la famille de Céleste ?",
+        options: [
+          "Parce qu'il veut lui voler son dossier médical.",
+          "Parce qu'on ne laisse entrer que la famille pour voir les malades.",
+          "Parce qu'il est vraiment le cousin de Céleste."
+        ],
+        answer: 1
+      },
+      {
+        q: "2. Pourquoi l'hôpital efface-t-il le dossier 66400 de Céleste ?",
+        options: [
+          "Parce que Céleste est guérie et rentrée chez ses parents.",
+          "Parce que l'ordinateur de l'accueil est tombé en panne.",
+          "Pour cacher son existence et la mettre au secret au dernier étage."
+        ],
+        answer: 2
+      },
+      {
+        q: "3. Quel détail permet au narrateur de comprendre le secret de Céleste ?",
+        options: [
+          "La forme de la tache sur son front est identique à la carte de l'Amazonie.",
+          "Le Doc lui envoie un message secret avec toutes les explications.",
+          "La vieille dame de la chambre 221 lui raconte la vérité."
+        ],
+        answer: 0
+      },
+      {
+        q: "4. Quel lien existe-t-il entre Céleste et la planète Terre ?",
+        options: [
+          "Céleste est une extraterrestre venue détruire les usines.",
+          "Céleste ressent et porte sur son corps toutes les blessures de la Terre.",
+          "Céleste a dessiné toutes les cartes de l'atlas du narrateur."
+        ],
+        answer: 1
+      },
+      {
+        q: "5. Pourquoi Industry veut-elle éliminer Céleste ?",
+        options: [
+          "Si le monde découvre son secret, les gens arrêteront de polluer et Industry perdra tout.",
+          "Parce que Céleste a refusé de prendre ses médicaments.",
+          "Parce que les parents de Céleste doivent de l'argent à l'hôpital."
+        ],
+        answer: 0
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Chapitre 5 : L'évasion dans le ciel",
+    ex1: {
+      left: [
+        "1. « Je l'enverrai de chez moi cette nuit, promis. »",
+        "2. « Pourquoi as-tu dit à mon père que j'étais une voleuse ? »",
+        "3. Il déclenche le frein de sécurité au sol pour arrêter la chute.",
+        "4. Il écrit « Voici Céleste, ma planète » au feutre rouge."
+      ],
+      right: [
+        "A. Le père de Briss",
+        "B. Le narrateur",
+        "C. Briss",
+        "D. Céleste"
+      ],
+      answers: [2, 3, 0, 1]
+    },
+    ex2: [
+      { label: "1. L'évasion sur la tour :", words: ["nacelle en métal", "clé spéciale", "poulie cassée", "ascenseur de service"], intruder: 3 },
+      { label: "2. L'attaque des gardes :", words: ["hommes en noir", "fusils automatiques", "étincelles", "hélicoptère"], intruder: 3 },
+      { label: "3. La fuite finale :", words: ["frein de sécurité", "camionnette", "tours de briques rouges", "bateau à moteur"], intruder: 3 },
+      { label: "4. Dans la chambre d'hôpital :", words: ["lit en métal", "couverture", "aucun médicament", "télévision"], intruder: 3 }
+    ],
+    ex3: {
+      bank: ["viral", "poulie", "humains", "frein", "fenêtre"],
+      sentences: [
+        { before: "1. Le narrateur demande à Briss d'envoyer un message", after: "à neuf milliards de personnes.", answer: "viral" },
+        { before: "2. Bloqué par les gardes dans le couloir, le garçon passe par la", after: "avec la nacelle.", answer: "fenêtre" },
+        { before: "3. Les médecins ne donnent pas de soins car seuls les", after: "peuvent guérir Céleste.", answer: "humains" },
+        { before: "4. Pendant la descente, une balle casse la", after: "et la nacelle tombe en chute libre.", answer: "poulie" },
+        { before: "5. Juste avant le sol, le père de Briss actionne le", after: "de sécurité pour les sauver.", answer: "frein" }
+      ]
+    },
+    ex4: [
+      {
+        q: "1. Pourquoi le narrateur demande-t-il à Briss de diffuser les photos sur Internet ?",
+        options: [
+          "Pour que le monde entier voie le lien entre Céleste et la Terre et réagisse.",
+          "Pour gagner beaucoup d'argent grâce aux vues sur Internet.",
+          "Pour montrer à sa mère qu'il sait utiliser un ordinateur."
+        ],
+        answer: 0
+      },
+      {
+        q: "2. Pourquoi n'y a-t-il aucun médicament dans la chambre de Céleste ?",
+        options: [
+          "Parce que l'hôpital n'a plus de médicaments en réserve.",
+          "Parce que seuls les gestes des humains pour protéger la Terre peuvent la guérir.",
+          "Parce que Céleste a jeté tous les médicaments par la fenêtre."
+        ],
+        answer: 1
+      },
+      {
+        q: "3. Que se passe-t-il dans la nacelle juste avant que les gardes tirent ?",
+        options: [
+          "Céleste embrasse le narrateur pour la première fois.",
+          "Le moteur de la nacelle tombe en panne.",
+          "Briss rejoint ses deux amis par le toit."
+        ],
+        answer: 0
+      },
+      {
+        q: "4. Pourquoi le narrateur donne-t-il un coup de pied au nez du père de Briss dans le noir ?",
+        options: [
+          "Parce qu'il est encore fâché contre Briss depuis vendredi.",
+          "Parce qu'il croit que c'est un ennemi qui attaque Céleste.",
+          "Parce que le père de Briss refuse de démarrer la camionnette."
+        ],
+        answer: 1
+      },
+      {
+        q: "5. Où le père de Briss emmène-t-il les deux jeunes gens pour les cacher ?",
+        options: [
+          "Dans l'appartement de la mère du narrateur.",
+          "Dans le quartier pauvre des tours de briques rouges.",
+          "Sur le toit de la tour-parking du 330."
+        ],
+        answer: 1
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: "Chapitre 6 : La cabane du Grand Nord",
+    ex1: {
+      left: [
+        "1. « Emmenez-moi, je suis seule. »",
+        "2. « Vous ne l'aurez pas ! Elle commence juste à aller mieux ! »",
+        "3. « Vous avez changé le monde ! »",
+        "4. Il appuie sur le bouton rouge d'un boîtier satellite."
+      ],
+      right: [
+        "A. Le trappeur (dans la cabane)",
+        "B. Céleste (pour protéger son ami)",
+        "C. Le narrateur (devenu fort à 16 ans)",
+        "D. L'homme armé (dehors, dans la neige)"
+      ],
+      answers: [1, 2, 0, 3]
+    },
+    ex2: [
+      { label: "1. Le décor du Grand Nord :", words: ["cabane en bois", "forêt blanche", "motoneige", "galerie commerciale"], intruder: 3 },
+      { label: "2. Les signes de guérison :", words: ["tache qui diminue", "joues roses", "marche dans la neige", "bandages"], intruder: 3 },
+      { label: "3. L'attaque de la cabane :", words: ["fusil à deux coups", "barbe glacée", "porte brisée", "hélicoptère"], intruder: 3 },
+      { label: "4. L'écriture du récit :", words: ["cahier blanc", "stylo gelé", "fin du cahier", "ordinateur"], intruder: 3 }
+    ],
+    ex3: {
+      bank: ["protéger", "guérir", "satellite", "cahier", "diminué"],
+      sentences: [
+        { before: "1. Le narrateur écrit toute leur histoire sur les dernières pages de son petit", after: ".", answer: "cahier" },
+        { before: "2. Après presque un an dans le Grand Nord, la tache sur le front de Céleste a", after: ".", answer: "diminué" },
+        { before: "3. Le garçon comprend que Céleste est en train de", after: ".", answer: "guérir" },
+        { before: "4. Avant d'entrer dans la cabane, le trappeur envoie un signal par", after: ".", answer: "satellite" },
+        { before: "5. Grâce aux photos diffusées par Briss, les humains ont changé pour", after: "la Terre.", answer: "protéger" }
+      ]
+    },
+    ex4: [
+      {
+        q: "1. Comment le narrateur sait-il que la Terre va mieux avant même l'arrivée du trappeur ?",
+        options: [
+          "Il écoute les informations à la radio de la cabane.",
+          "Il voit que la tache sur le front de Céleste diminue et qu'elle guérit.",
+          "Briss lui envoie une lettre par avion."
+        ],
+        answer: 1
+      },
+      {
+        q: "2. Pourquoi Céleste dit-elle au trappeur : « Emmenez-moi, je suis seule » ?",
+        options: [
+          "Parce qu'elle veut rentrer dans la grande ville.",
+          "Pour se sacrifier et protéger le narrateur qui est caché.",
+          "Parce que le narrateur est parti chercher du bois dans la forêt."
+        ],
+        answer: 1
+      },
+      {
+        q: "3. Pourquoi le trappeur baisse-t-il son fusil et pleure-t-il d'émotion ?",
+        options: [
+          "Parce qu'il a froid et qu'il est perdu dans la tempête.",
+          "Parce qu'il reconnaît Céleste, devenue célèbre dans le monde entier.",
+          "Parce que le narrateur lui a cassé le bras."
+        ],
+        answer: 1
+      },
+      {
+        q: "4. Quel effet le message viral envoyé par Briss a-t-il eu sur l'humanité ?",
+        options: [
+          "Personne n'a cru aux photos et tout a continué comme avant.",
+          "Les gens ont pris conscience du danger et ont changé pour sauver la planète.",
+          "Les usines d'Industry ont construit encore plus de tours."
+        ],
+        answer: 1
+      },
+      {
+        q: "5. Quelle est la toute dernière nouvelle annoncée par le trappeur à la fin du livre ?",
+        options: [
+          "Que la planète va beaucoup mieux.",
+          "Que les parents de Céleste arrivent en motoneige.",
+          "Que l'hiver va durer encore dix ans."
+        ],
+        answer: 0
+      }
+    ]
+  }
+];
+
+// ============================================================================
+// ÉTAT DU JEU & SYNTHÈSE VOCALE
+// ============================================================================
+let currentChapter = null;
+let state = {};
+let selectedLeft = null;
+let activeBankWord = null;
+let isCorrected = false;
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "fr-FR";
+  utter.rate = 0.92;
+  window.speechSynthesis.speak(utter);
+}
+
+function getSavedScores() {
+  try {
+    return JSON.parse(localStorage.getItem("celeste_scores_tymofii") || "{}");
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveScore(chapId, score, total) {
+  const scores = getSavedScores();
+  const prev = scores[chapId] || 0;
+  if (score >= prev) {
+    scores[chapId] = score;
+    localStorage.setItem("celeste_scores_tymofii", JSON.stringify(scores));
+  }
+}
+
+// ============================================================================
+// AFFICHAGE DU MENU DES CHAPITRES
+// ============================================================================
+function showMenu() {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  document.getElementById("menu-view").classList.remove("hidden");
+  document.getElementById("game-view").classList.add("hidden");
+  document.getElementById("back-btn").classList.add("hidden");
+  document.getElementById("header-subtitle").textContent = "Choisis un chapitre pour commencer les jeux de lecture";
+
+  const saved = getSavedScores();
+  const grid = document.getElementById("menu-view");
+  grid.innerHTML = "";
+
+  CHAPTERS.forEach(ch => {
+    const best = saved[ch.id];
+    const scoreText = best !== undefined
+      ? `⭐ Meilleur score : <strong>${best} / 18</strong>`
+      : "Pas encore joué";
+
+    const card = document.createElement("div");
+    card.className = "chapter-card";
+    card.innerHTML = `
+      <div>
+        <span class="chapter-badge">4 mini-jeux</span>
+        <h2>${ch.title}</h2>
+      </div>
+      <div class="chapter-score">${scoreText}</div>
+      <button class="btn btn-primary" onclick="startChapter(${ch.id})">Jouer ▶</button>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ============================================================================
+// DÉMARRAGE D'UN CHAPITRE
+// ============================================================================
+function startChapter(chapId) {
+  currentChapter = CHAPTERS.find(c => c.id === chapId);
+  isCorrected = false;
+  selectedLeft = null;
+  activeBankWord = null;
+
+  state = {
+    ex1Pairs: [null, null, null, null], // index droite associé à chaque index gauche
+    ex2Choices: [null, null, null, null],
+    ex3Gaps: [null, null, null, null, null],
+    ex4Choices: [null, null, null, null, null]
+  };
+
+  document.getElementById("menu-view").classList.add("hidden");
+  document.getElementById("game-view").classList.remove("hidden");
+  document.getElementById("back-btn").classList.remove("hidden");
+  document.getElementById("header-subtitle").textContent = currentChapter.title;
+
+  renderGame();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderGame() {
+  const view = document.getElementById("game-view");
+  const ch = currentChapter;
+
+  // --- JEU 1 : QUI A DIT OU FAIT QUOI ---
+  let ex1LeftHtml = ch.ex1.left.map((txt, i) => {
+    const pairIdx = state.ex1Pairs[i];
+    const cls = pairIdx !== null ? `pair-${i}` : (selectedLeft === i ? "selected" : "");
+    const tag = pairIdx !== null ? `<span class="pair-tag">Lien ${i + 1}</span>` : "";
+    return `<button class="match-item ${cls}" id="ex1-l-${i}" onclick="clickLeft(${i})">${tag}${txt}</button>`;
+  }).join("");
+
+  let ex1RightHtml = ch.ex1.right.map((txt, j) => {
+    const linkedLeft = state.ex1Pairs.indexOf(j);
+    const cls = linkedLeft !== -1 ? `pair-${linkedLeft}` : "";
+    const tag = linkedLeft !== -1 ? `<span class="pair-tag">Lien ${linkedLeft + 1}</span>` : "";
+    return `<button class="match-item ${cls}" id="ex1-r-${j}" onclick="clickRight(${j})">${tag}${txt}</button>`;
+  }).join("");
+
+  // --- JEU 2 : CHASSE À L'INTRUS ---
+  let ex2Html = ch.ex2.map((row, rIdx) => {
+    const chips = row.words.map((w, wIdx) => {
+      const crossed = state.ex2Choices[rIdx] === wIdx ? "crossed" : "";
+      return `<button class="word-chip ${crossed}" id="ex2-${rIdx}-${wIdx}" onclick="toggleIntruder(${rIdx}, ${wIdx})">${w}</button>`;
+    }).join("");
+    const fullRowText = `${row.label} ${row.words.join(", ")}`;
+    return `
+      <div class="intruder-row" id="ex2-row-${rIdx}">
+        <div class="intruder-label">
+          <span>${row.label}</span>
+          <button class="speak-btn" title="Écouter" onclick="speak('${escapeQuote(fullRowText)}')">🔊</button>
+        </div>
+        <div class="words-wrap">${chips}</div>
+        <div class="correction-hint hidden" id="ex2-hint-${rIdx}"></div>
+      </div>
+    `;
+  }).join("");
+
+  // --- JEU 3 : PHRASES À TROUS ---
+  let bankHtml = ch.ex3.bank.map((w, idx) => {
+    const isUsed = state.ex3Gaps.includes(w) ? "used" : "";
+    const isActive = activeBankWord === w ? "active" : "";
+    return `<button class="bank-word ${isUsed} ${isActive}" onclick="selectBankWord('${escapeQuote(w)}')">${w}</button>`;
+  }).join("");
+
+  let sentencesHtml = ch.ex3.sentences.map((s, sIdx) => {
+    const val = state.ex3Gaps[sIdx] || "________";
+    const fullSentence = `${s.before} ${state.ex3Gaps[sIdx] || "blanc"} ${s.after}`;
+    return `
+      <div class="gap-sentence" id="ex3-row-${sIdx}">
+        <button class="speak-btn" title="Écouter" onclick="speak('${escapeQuote(fullSentence)}')">🔊</button>
+        <div>
+          ${s.before}
+          <span class="gap-slot" id="ex3-slot-${sIdx}" onclick="fillGap(${sIdx})">${val}</span>
+          ${s.after}
+          <div class="correction-hint hidden" id="ex3-hint-${sIdx}"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // --- JEU 4 : QCM ---
+  let qcmHtml = ch.ex4.map((item, qIdx) => {
+    const opts = item.options.map((opt, oIdx) => {
+      const chosen = state.ex4Choices[qIdx] === oIdx ? "chosen" : "";
+      const box = state.ex4Choices[qIdx] === oIdx ? "☑" : "☐";
+      return `<button class="qcm-opt ${chosen}" id="ex4-${qIdx}-${oIdx}" onclick="chooseQcm(${qIdx}, ${oIdx})"><span>${box}</span><span>${opt}</span></button>`;
+    }).join("");
+    return `
+      <div class="qcm-block" id="ex4-block-${qIdx}">
+        <div class="qcm-question">
+          <span>${item.q}</span>
+          <button class="speak-btn" title="Écouter" onclick="speak('${escapeQuote(item.q + " " + item.options.join(". "))}')">🔊</button>
+        </div>
+        <div class="qcm-options">${opts}</div>
+      </div>
+    `;
+  }).join("");
+
+  view.innerHTML = `
+    <!-- JEU 1 -->
+    <section class="game-card">
+      <div class="game-header">
+        <div>
+          <h3 class="game-title">Exercice 1 : Qui a dit ou fait quoi ?</h3>
+          <p class="game-consigne">Clique sur une phrase à gauche, puis sur le personnage à droite.</p>
+        </div>
+        <button class="speak-btn" onclick="speak('Exercice 1 : Qui a dit ou fait quoi ? Clique sur une phrase à gauche, puis sur le personnage à droite.')">🔊</button>
+      </div>
+      <div class="match-grid">
+        <div class="match-col">${ex1LeftHtml}</div>
+        <div class="match-col">${ex1RightHtml}</div>
+      </div>
+      <div class="correction-hint hidden" id="ex1-hint" style="margin-top:12px;"></div>
+    </section>
+
+    <!-- JEU 2 -->
+    <section class="game-card">
+      <div class="game-header">
+        <div>
+          <h3 class="game-title">Exercice 2 : La chasse à l'intrus</h3>
+          <p class="game-consigne">Dans chaque liste, clique sur le mot qui n'a pas de rapport avec le chapitre.</p>
+        </div>
+        <button class="speak-btn" onclick="speak('Exercice 2 : La chasse à l intrus. Dans chaque liste, clique sur le mot qui n a pas de rapport avec le chapitre.')">🔊</button>
+      </div>
+      ${ex2Html}
+    </section>
+
+    <!-- JEU 3 -->
+    <section class="game-card">
+      <div class="game-header">
+        <div>
+          <h3 class="game-title">Exercice 3 : Phrases à trous</h3>
+          <p class="game-consigne">Clique sur un mot dans la banque jaune, puis clique sur le trou dans la phrase.</p>
+        </div>
+        <button class="speak-btn" onclick="speak('Exercice 3 : Phrases à trous. Clique sur un mot dans la banque jaune, puis clique sur le trou dans la phrase.')">🔊</button>
+      </div>
+      <div class="word-bank">
+        <span class="bank-title">Banque de mots :</span>
+        ${bankHtml}
+      </div>
+      ${sentencesHtml}
+    </section>
+
+    <!-- JEU 4 -->
+    <section class="game-card">
+      <div class="game-header">
+        <div>
+          <h3 class="game-title">Exercice 4 : QCM — Comprendre l'histoire</h3>
+          <p class="game-consigne">Clique sur la bonne réponse pour chaque question.</p>
+        </div>
+        <button class="speak-btn" onclick="speak('Exercice 4 : Q C M. Clique sur la bonne réponse pour chaque question.')">🔊</button>
+      </div>
+      ${qcmHtml}
+    </section>
+
+    <!-- VALIDATION -->
+    <div style="text-align:center; margin-top:24px;">
+      <button id="validate-btn" class="btn btn-success" onclick="validateChapter()">✅ Vérifier mes réponses</button>
+    </div>
+
+    <!-- RÉSULTAT & ENVOI FORMSPREE -->
+    <div id="result-box" class="result-box hidden"></div>
+  `;
+}
+
+function escapeQuote(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+}
+
+// ============================================================================
+// INTERACTIONS DES 4 MINI-JEUX
+// ============================================================================
+function clickLeft(idx) {
+  if (isCorrected) return;
+  // Si déjà relié, on annule son lien pour permettre la modification
+  if (state.ex1Pairs[idx] !== null) {
+    state.ex1Pairs[idx] = null;
+  }
+  selectedLeft = (selectedLeft === idx) ? null : idx;
+  renderGame();
+}
+
+function clickRight(rIdx) {
+  if (isCorrected) return;
+  if (selectedLeft === null) return;
+  // Libère si rIdx était déjà pris
+  const existingLeft = state.ex1Pairs.indexOf(rIdx);
+  if (existingLeft !== -1) {
+    state.ex1Pairs[existingLeft] = null;
+  }
+  state.ex1Pairs[selectedLeft] = rIdx;
+  selectedLeft = null;
+  renderGame();
+}
+
+function toggleIntruder(rIdx, wIdx) {
+  if (isCorrected) return;
+  state.ex2Choices[rIdx] = (state.ex2Choices[rIdx] === wIdx) ? null : wIdx;
+  renderGame();
+}
+
+function selectBankWord(word) {
+  if (isCorrected) return;
+  activeBankWord = (activeBankWord === word) ? null : word;
+  renderGame();
+}
+
+function fillGap(sIdx) {
+  if (isCorrected) return;
+  if (activeBankWord) {
+    // Retire le mot s'il était ailleurs
+    const prevIdx = state.ex3Gaps.indexOf(activeBankWord);
+    if (prevIdx !== -1) state.ex3Gaps[prevIdx] = null;
+    state.ex3Gaps[sIdx] = activeBankWord;
+    activeBankWord = null;
+  } else if (state.ex3Gaps[sIdx] !== null) {
+    // Vide le trou au clic si aucun mot sélectionné
+    state.ex3Gaps[sIdx] = null;
+  }
+  renderGame();
+}
+
+function chooseQcm(qIdx, oIdx) {
+  if (isCorrected) return;
+  state.ex4Choices[qIdx] = oIdx;
+  renderGame();
+}
+
+// ============================================================================
+// CORRECTION & CALCUL DU SCORE
+// ============================================================================
+function validateChapter() {
+  if (isCorrected) return;
+  isCorrected = true;
+  document.getElementById("validate-btn").classList.add("hidden");
+
+  const ch = currentChapter;
+  let scoreEx1 = 0, scoreEx2 = 0, scoreEx3 = 0, scoreEx4 = 0;
+  let mistakes = [];
+
+  // 1. Correction Ex 1 (4 pts)
+  let ex1Corrections = [];
+  ch.ex1.answers.forEach((correctR, i) => {
+    const userR = state.ex1Pairs[i];
+    const elL = document.getElementById(`ex1-l-${i}`);
+    if (userR === correctR) {
+      scoreEx1++;
+      elL.classList.add("correct-ans");
+    } else {
+      elL.classList.add("wrong-ans");
+      ex1Corrections.push(`${i + 1} → ${ch.ex1.right[correctR]}`);
+      mistakes.push(`Ex1 (${ch.ex1.left[i]}) : attendu "${ch.ex1.right[correctR]}"`);
+    }
+  });
+  if (ex1Corrections.length > 0) {
+    const h1 = document.getElementById("ex1-hint");
+    h1.classList.remove("hidden");
+    h1.textContent = "Bonnes associations : " + ex1Corrections.join("  |  ");
+  }
+
+  // 2. Correction Ex 2 (4 pts)
+  ch.ex2.forEach((row, rIdx) => {
+    const userW = state.ex2Choices[rIdx];
+    const correctW = row.intruder;
+    if (userW === correctW) {
+      scoreEx2++;
+      document.getElementById(`ex2-${rIdx}-${correctW}`).classList.add("correct-ans");
+    } else {
+      if (userW !== null) {
+        document.getElementById(`ex2-${rIdx}-${userW}`).classList.add("wrong-ans");
+      }
+      const hint = document.getElementById(`ex2-hint-${rIdx}`);
+      hint.classList.remove("hidden");
+      hint.textContent = `L'intrus était : ${row.words[correctW]}`;
+      mistakes.push(`Ex2 (${row.label}) : intrus = "${row.words[correctW]}"`);
+    }
+  });
+
+  // 3. Correction Ex 3 (5 pts)
+  ch.ex3.sentences.forEach((s, sIdx) => {
+    const userVal = state.ex3Gaps[sIdx];
+    const slot = document.getElementById(`ex3-slot-${sIdx}`);
+    if (userVal === s.answer) {
+      scoreEx3++;
+      slot.classList.add("correct-ans");
+    } else {
+      slot.classList.add("wrong-ans");
+      const hint = document.getElementById(`ex3-hint-${sIdx}`);
+      hint.classList.remove("hidden");
+      hint.textContent = `Mot attendu : ${s.answer}`;
+      mistakes.push(`Ex3 (Phrase ${sIdx + 1}) : attendu "${s.answer}" (choisi : "${userVal || "vide"}")`);
+    }
+  });
+
+  // 4. Correction Ex 4 (5 pts)
+  ch.ex4.forEach((item, qIdx) => {
+    const userO = state.ex4Choices[qIdx];
+    const correctO = item.answer;
+    document.getElementById(`ex4-${qIdx}-${correctO}`).classList.add("correct-ans");
+    if (userO === correctO) {
+      scoreEx4++;
+    } else {
+      if (userO !== null) {
+        document.getElementById(`ex4-${qIdx}-${userO}`).classList.add("wrong-ans");
+      }
+      mistakes.push(`Ex4 (${item.q}) : bonne réponse = "${item.options[correctO]}"`);
+    }
+  });
+
+  const totalScore = scoreEx1 + scoreEx2 + scoreEx3 + scoreEx4;
+  saveScore(ch.id, totalScore, 18);
+
+  const summaryText =
+    `Élève : Tymofii\n` +
+    `Chapitre : ${ch.title}\n` +
+    `Score global : ${totalScore} / 18\n` +
+    `Détail : Ex 1 (${scoreEx1}/4) | Ex 2 (${scoreEx2}/4) | Ex 3 (${scoreEx3}/5) | Ex 4 (${scoreEx4}/5)\n\n` +
+    (mistakes.length === 0
+      ? "Aucune erreur ! Bravo !"
+      : "Points à revoir :\n- " + mistakes.join("\n- "));
+
+  const box = document.getElementById("result-box");
+  box.classList.remove("hidden");
+  box.innerHTML = `
+    <div style="font-size:1.3rem; font-weight:bold; color:var(--primary);">🎉 Chapitre terminé !</div>
+    <div class="result-score">${totalScore} / 18</div>
+    <p style="margin:6px 0 18px; color:var(--muted);">
+      Ex 1 : <strong>${scoreEx1}/4</strong> &nbsp;•&nbsp;
+      Ex 2 : <strong>${scoreEx2}/4</strong> &nbsp;•&nbsp;
+      Ex 3 : <strong>${scoreEx3}/5</strong> &nbsp;•&nbsp;
+      Ex 4 : <strong>${scoreEx4}/5</strong>
+    </p>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px;">
+      <button id="send-btn" class="btn btn-success">📨 Envoyer mon résultat à Benjamin</button>
+      <button class="btn btn-outline" onclick="startChapter(${ch.id})">🔄 Rejouer ce chapitre</button>
+    </div>
+    <div id="send-status" class="send-status hidden"></div>
+  `;
+
+  document.getElementById("send-btn").onclick = () => sendToFormspree(ch.title, totalScore, summaryText);
+  box.scrollIntoView({ behavior: "smooth" });
+  speak(`Chapitre terminé ! Tu as obtenu ${totalScore} sur 18.`);
+}
+
+// ============================================================================
+// ENVOI VERS FORMSPREE
+// ============================================================================
+async function sendToFormspree(chapterTitle, score, detailText) {
+  const btn = document.getElementById("send-btn");
+  const statusEl = document.getElementById("send-status");
+  btn.disabled = true;
+  btn.textContent = "⏳ Envoi en cours...";
+
+  try {
+    const response = await fetch(FORMSPREE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        eleve: "Tymofii",
+        chapitre: chapterTitle,
+        score: `${score} / 18`,
+        detail: detailText
+      })
+    });
+
+    if (response.ok) {
+      btn.textContent = "✅ Résultat envoyé !";
+      statusEl.classList.remove("hidden");
+      statusEl.style.background = "var(--success-bg)";
+      statusEl.style.color = "var(--success)";
+      statusEl.textContent = "Super ! Benjamin a bien reçu ton score.";
+    } else {
+      throw new Error("Erreur serveur");
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = "📨 Réessayer l'envoi";
+    statusEl.classList.remove("hidden");
+    statusEl.style.background = "var(--error-bg)";
+    statusEl.style.color = "var(--error)";
+    statusEl.innerHTML = `L'envoi automatique n'a pas fonctionné (vérifie la connexion Internet). <br><button class="btn btn-outline" style="margin-top:8px;" onclick="copySummary()">📋 Copier le résumé</button>`;
+    window._lastSummary = detailText;
+  }
+}
+
+function copySummary() {
+  if (navigator.clipboard && window._lastSummary) {
+    navigator.clipboard.writeText(window._lastSummary);
+    alert("Résumé copié ! Tu peux le coller dans un message.");
+  }
+}
+
+// Initialisation au chargement
+showMenu();
+</script>
+</body>
+</html>
